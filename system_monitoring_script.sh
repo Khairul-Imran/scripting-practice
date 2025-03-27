@@ -9,7 +9,33 @@ echo "We will be monitoring the CPU, Memory, Disk and Network usage of the syste
 
 # Functions
 # Function to monitor the CPU usage (TODO: Finish this function)
-top -l 1 -n 0 | grep "CPU usage"
+get_cpu_info() {
+    echo "CPU Usage:"
+
+    # Get CPU usage using top
+    cpu_line=$(top -l 1 -n 0 | grep "CPU usage")
+
+    # Exract user, system, and idle percentages
+    user_percent=$(echo "$cpu_line" | awk '{print $3}' | sed 's/%//')
+    system_percent=$(echo "$cpu_line" | awk '{print $5}' | sed 's/%//')
+    idle_percent=$(echo "$cpu_line" | awk '{print $7}' | sed 's/%//')
+
+    # Calculate total usage
+    total_used=$(echo "scale=1; $user_percent + $system_percent" | bc) # What does scale, and bc do?
+
+    # Get CPU details (cores/threads)
+    cpu_brand=$(sysctl -n machdep.cpu.brand_string)
+    cpu_cores=$(sysctl -n hw.physicalcpu)
+    cpu_threads=$(sysctl -n hw.logicalcpu)
+
+    # Output
+    echo " Model: $cpu_brand"
+    echo " Cores: $cpu_cores physical, $cpu_threads logical"
+    echo " User: ${user_percent}%"
+    echo " System: ${system_percent}%"
+    echo " Idle: ${idle_percent}%"
+    echo " Total Usage: ${total_used}%"
+}
 
 # Function to monitor the Memory usage
 get_memory_info() {
@@ -81,6 +107,8 @@ get_network_info() {
     done
 }
 
+get_cpu_info
+echo ""
 get_memory_info
 echo ""
 get_disk_info
