@@ -6,6 +6,8 @@ echo "Welcome to Khairul's system monitoring dashboard!"
 
 echo "We will be monitoring the CPU, Memory, Disk and Network usage of the system."
 
+echo ""
+echo ""
 
 # Functions
 # Function to monitor the CPU usage (TODO: Finish this function)
@@ -21,7 +23,9 @@ get_cpu_info() {
     idle_percent=$(echo "$cpu_line" | awk '{print $7}' | sed 's/%//')
 
     # Calculate total usage
-    total_used=$(echo "scale=1; $user_percent + $system_percent" | bc) # What does scale, and bc do?
+    total_used=$(echo "scale=1; $user_percent + $system_percent" | bc)
+    # scale=2 sets the decimal precision (number of places after the decimal point)
+    # bc is a command-line calculator that handles decimal arithmetic (which bash doesn't natively support)
 
     # Get CPU details (cores/threads)
     cpu_brand=$(sysctl -n machdep.cpu.brand_string)
@@ -50,7 +54,7 @@ get_memory_info() {
     vm_stat_output=$(vm_stat)
 
     # Extract pages free and convert to human readable format
-    pages_free=$(echo "$vm_state_output" | grep "Pages free" | awk '{print $3}' | sed 's/\.//')
+    pages_free=$(echo "$vm_stat_output" | grep "Pages free" | awk '{print $3}' | sed 's/\.//')
     page_size=$(sysctl -n hw.pagesize)
     free_mem=$(echo "scale=2; $pages_free * $page_size / 1024^3" | bc)
 
@@ -63,7 +67,7 @@ get_memory_info() {
     # Output
     echo "Memory Usage:"
     echo "  Total: ${total_mem_gb}GB"
-    echo "  Used: ${used_mem}GB (${usage_percent}%)"
+    echo "  Used: ${used_mem}GB (${usage_percentage}%)"
     echo "  Free: ${free_mem}GB"
     echo " -------------------------------------------"
 }
