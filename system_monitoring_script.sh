@@ -35,6 +35,7 @@ get_cpu_info() {
     echo " System: ${system_percent}%"
     echo " Idle: ${idle_percent}%"
     echo " Total Usage: ${total_used}%"
+    echo " -------------------------------------------"
 }
 
 # Function to monitor the Memory usage
@@ -64,6 +65,7 @@ get_memory_info() {
     echo "  Total: ${total_mem_gb}GB"
     echo "  Used: ${used_mem}GB (${usage_percent}%)"
     echo "  Free: ${free_mem}GB"
+    echo " -------------------------------------------"
 }
 
 # Function to monitor the Disk usage
@@ -72,6 +74,7 @@ get_disk_info() {
 
     # Get disk usage for all mounted filesystems, filtering out non-standard ones
     df -h | grep -v "devfs\|map" | awk 'NR>1 {printf "  %s: %s used of %s (%s)\n", $9, $3, $2, $5}'
+    echo " -------------------------------------------"
 }
 
 # Function to monitor the Network usage
@@ -105,6 +108,7 @@ get_network_info() {
         echo "    Total Sent: ${out_mb}MB"
 
     done
+    echo " -------------------------------------------"
 }
 
 get_cpu_info
